@@ -31,10 +31,15 @@ $ tail -f /var/log/audit/audit.log | bin/kafka-console-producer.sh --broker-list
 3. In a second window on the sandbox VM, run the following commands as the root user and keep the window open:
 
 $ while true
+
 do
+
    sshpass -p wrongpass ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  user01@localhost
+   
    sshpass -p wrongpass ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  user02@localhost 
+   
    sleep 5
+
 done
 
 4. In a third window on the sandbox VM, run the following command as any user and keep the window open:
