@@ -15,6 +15,7 @@ Produce anomaly records at proper time as per threshold and duration. Windowing 
 
 
 Testing:
+
 0. As any user, create the input and output Kafka topics:
 
 $ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic auditRecords 
