@@ -54,8 +54,8 @@ public final class LoginAnomalyDetector {
     	
         if (args.length < 6) {
             System.err.println("Usage: AuditAnomalyDetector <broker> <inTopic> <outTopic> <numLogins> <interval> <windowsize>");
-            //used to be 4 for: <broker> <in-topic> <out-topic> <interval>
-            //System.err.println("eg: AuditAnomalyDetector logins anomalies localhost 9092 5000");
+            // used to be 4 for: <broker> <in-topic> <out-topic> <interval>
+            // System.err.println("eg: AuditAnomalyDetector logins anomalies localhost 9092 5000");
             System.exit(1);
         }
 
@@ -116,14 +116,14 @@ public final class LoginAnomalyDetector {
             	List<String> parts = Arrays.asList(x.split(" "));
             	// if(parts.size()==14 && (parts.get(0)).contains("USER_AUTH") && (parts.get(parts.size()-1)).contains("fail")){
             	if(parts.size()==14 && (parts.get(0)).contains("USER_LOGIN") && (parts.get(parts.size()-1)).contains("fail") && (parts.get(8)).contains("acct")){
-            		String user = parts.get(8); //this gets the acct field
-            		// System.out.println("PRINTING INDEX 8: " + user); //test output
+            		String user = parts.get(8); // this gets the acct field
+            		// System.out.println("PRINTING INDEX 8: " + user); // test output
             		List<String> ret = new ArrayList<String>();
                 	ret.add(user);
                 	return ret.iterator();
             	}
             	List<String> etc = new ArrayList<String>();
-            	return etc.iterator(); //else return empty
+            	return etc.iterator(); // else return empty
             }
         });
         words.print(); // print the "sorted through" words AKA acct fields
@@ -163,7 +163,7 @@ public final class LoginAnomalyDetector {
                             String ret = "ANOMALY: " + tuple._1.toString() + " : " + tuple._2.toString();
                             ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>
                                 (outTopic, tuple._1.toString(), ret); //topic, key, value
-                            // producer.send(producerRecord); //ADDED IF STATEMENT BELOW
+                            // producer.send(producerRecord); // ADDED IF STATEMENT BELOW
                             if(tuple._2 >= numLogins){ // if value (# failed logins) >= user's arg value
                             	producer.send(producerRecord);
                             }
