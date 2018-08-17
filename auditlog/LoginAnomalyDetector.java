@@ -50,7 +50,7 @@ public final class LoginAnomalyDetector {
     private static final Logger LOGGER = Logger.getLogger(LoginAnomalyDetector.class.getName());
     public static void main(String[] args) {
     	
-    	//System.out.println("------THE APPLICATION HAS BEGUN!TEST------");
+    	// System.out.println("------THE APPLICATION HAS BEGUN!TEST------");
     	
         if (args.length < 6) {
             System.err.println("Usage: AuditAnomalyDetector <broker> <inTopic> <outTopic> <numLogins> <interval> <windowsize>");
@@ -105,19 +105,19 @@ public final class LoginAnomalyDetector {
                return record.value();
             }
         }); 
-        //values.print(); //see each entire line
+        // values.print(); //see each entire line
        
         // pull words out of values
-    	//flatmap returns RDD, which is a sequence, not a value 
+    	// flatmap returns RDD, which is a sequence, not a value 
         JavaDStream<String> words = values.flatMap(new FlatMapFunction<String, String>() {
             private static final long serialVersionUID = 1L;
 
             public Iterator<String> call(String x) {
             	List<String> parts = Arrays.asList(x.split(" "));
-            	//if(parts.size()==14 && (parts.get(0)).contains("USER_AUTH") && (parts.get(parts.size()-1)).contains("fail")){
+            	// if(parts.size()==14 && (parts.get(0)).contains("USER_AUTH") && (parts.get(parts.size()-1)).contains("fail")){
             	if(parts.size()==14 && (parts.get(0)).contains("USER_LOGIN") && (parts.get(parts.size()-1)).contains("fail") && (parts.get(8)).contains("acct")){
             		String user = parts.get(8); //this gets the acct field
-            		//System.out.println("PRINTING INDEX 8: " + user); //test output
+            		// System.out.println("PRINTING INDEX 8: " + user); //test output
             		List<String> ret = new ArrayList<String>();
                 	ret.add(user);
                 	return ret.iterator();
@@ -126,7 +126,7 @@ public final class LoginAnomalyDetector {
             	return etc.iterator(); //else return empty
             }
         });
-        words.print(); //print the "sorted through" words AKA acct fields
+        words.print(); // print the "sorted through" words AKA acct fields
 
         JavaPairDStream<String, Integer> wordCounts = words.mapToPair(
                 new PairFunction<String, String, Integer>() {
@@ -140,7 +140,7 @@ public final class LoginAnomalyDetector {
                         return i1 + i2;
                     }
                 }, Durations.milliseconds(windowSize), Durations.milliseconds(interval));  
-        wordCounts.print(); //print sum of accts
+        wordCounts.print(); // print sum of accts
  
         // send the wordcounts to the output stream
         wordCounts.foreachRDD(new VoidFunction<JavaPairRDD<String, Integer>>() {
@@ -163,8 +163,8 @@ public final class LoginAnomalyDetector {
                             String ret = "ANOMALY: " + tuple._1.toString() + " : " + tuple._2.toString();
                             ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>
                                 (outTopic, tuple._1.toString(), ret); //topic, key, value
-                            //producer.send(producerRecord); //ADDED IF STATEMENT BELOW
-                            if(tuple._2 >= numLogins){ //if value (# failed logins) >= user's arg value
+                            // producer.send(producerRecord); //ADDED IF STATEMENT BELOW
+                            if(tuple._2 >= numLogins){ // if value (# failed logins) >= user's arg value
                             	producer.send(producerRecord);
                             }
                         }
